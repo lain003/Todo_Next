@@ -1,0 +1,14 @@
+query getTasksPagination($page: Int!) {
+  tasksPagination(page: $page){
+    tasks{
+      id
+      name
+      description
+      status
+    }
+    pagination{
+      current,
+      totalPages
+    }
+  }
+}

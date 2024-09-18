@@ -1,0 +1,50 @@
+services:
+  rails_app:
+    build:
+      context: .
+      dockerfile: rails/Dockerfile
+    stdin_open: true
+    tty: true
+    hostname: web-server
+    ports:
+      - 3000:3000
+    working_dir: /rails
+    command: sh -c "rm -f ./tmp/pids/server.pid && bundle install && rails s -b 0.0.0.0"
+    volumes:
+      - ./rails:/rails
+      - bundle:/usr/local/bundle
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      TEST_DB_HOST: db
+    depends_on:
+      - db
+  db:
+    image: postgres:16.3
+    stdin_open: true
+    tty: true
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+  next_app:
+    build:
+      context: .
+      dockerfile: next/Dockerfile
+    stdin_open: true
+    ports:
+      - 3001:3001
+    environment:
+      - WATCHPACK_POLLING=true
+    tty: true
+    hostname: next_app
+    working_dir: /next
+    command: /bin/sh -c "npm run dev -- -p 3001"
+    volumes:
+      - ./next:/next
+volumes:
+  bundle:
+  postgres_volume:

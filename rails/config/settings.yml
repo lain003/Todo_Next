@@ -1,0 +1,5 @@
+error_codes:
+  graphql:
+    mutations:
+      create_task:
+        name_empty: E1
